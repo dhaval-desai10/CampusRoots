@@ -1,7 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
+import { PermissionProvider } from './context/PermissionContext';
 import PrivateRoute from './components/PrivateRoute';
+import PermissionRoute from './components/PermissionRoute';
 import Login from './pages/Login';
 import CompleteProfile from './pages/CompleteProfile';
 import Flashback from './pages/Flashback';
@@ -21,109 +23,121 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/complete-profile"
-              element={
-                <PrivateRoute>
-                  <CompleteProfile />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/flashback"
-              element={
-                <PrivateRoute>
-                  <Flashback />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <PrivateRoute>
-                  <Settings />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/network"
-              element={
-                <PrivateRoute>
-                  <Network />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/chat"
-              element={
-                <PrivateRoute>
-                  <Chat />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/feed"
-              element={
-                <PrivateRoute>
-                  <Feed />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/profile/:userId"
-              element={
-                <PrivateRoute>
-                  <UserProfile />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/reunions"
-              element={
-                <PrivateRoute>
-                  <Reunions />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/gallery"
-              element={
-                <PrivateRoute>
-                  <Gallery />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/feedback"
-              element={
-                <PrivateRoute>
-                  <Feedback />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/donation"
-              element={
-                <PrivateRoute>
-                  <Donation />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/internships"
-              element={
-                <PrivateRoute>
-                  <Internships />
-                </PrivateRoute>
-              }
-            />
-            <Route path="/" element={<Navigate to="/flashback" replace />} />
-            <Route path="*" element={<Navigate to="/flashback" replace />} />
-          </Routes>
-        </Router>
+        <PermissionProvider>
+          <Router>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/complete-profile"
+                element={
+                  <PrivateRoute>
+                    <CompleteProfile />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/flashback"
+                element={
+                  <PrivateRoute>
+                    <Flashback />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <PrivateRoute>
+                    <Settings />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/network"
+                element={
+                  <PrivateRoute>
+                    <Network />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/chat"
+                element={
+                  <PrivateRoute>
+                    <Chat />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/feed"
+                element={
+                  <PrivateRoute>
+                    <PermissionRoute module="feed">
+                      <Feed />
+                    </PermissionRoute>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/profile/:userId"
+                element={
+                  <PrivateRoute>
+                    <UserProfile />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/reunions"
+                element={
+                  <PrivateRoute>
+                    <PermissionRoute module="reunion">
+                      <Reunions />
+                    </PermissionRoute>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/gallery"
+                element={
+                  <PrivateRoute>
+                    <PermissionRoute module="gallery">
+                      <Gallery />
+                    </PermissionRoute>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/feedback"
+                element={
+                  <PrivateRoute>
+                    <Feedback />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/donation"
+                element={
+                  <PrivateRoute>
+                    <PermissionRoute module="contribution">
+                      <Donation />
+                    </PermissionRoute>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/internships"
+                element={
+                  <PrivateRoute>
+                    <PermissionRoute module="internship">
+                      <Internships />
+                    </PermissionRoute>
+                  </PrivateRoute>
+                }
+              />
+              <Route path="/" element={<Navigate to="/flashback" replace />} />
+              <Route path="*" element={<Navigate to="/flashback" replace />} />
+            </Routes>
+          </Router>
+        </PermissionProvider>
       </AuthProvider>
     </ThemeProvider>
   );

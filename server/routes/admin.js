@@ -12,7 +12,9 @@ import {
    deletePost,
    getAllReunions,
    createReunion,
-   deleteReunion
+   deleteReunion,
+   getRolePermissions,
+   updateRolePermission
 } from '../controllers/adminController.js';
 
 const router = express.Router();
@@ -38,5 +40,9 @@ router.delete('/posts/:postId', verifyAdminToken, deletePost);
 router.get('/reunions', verifyAdminToken, getAllReunions);
 router.post('/reunions', verifyAdminToken, createReunion);
 router.delete('/reunions/:reunionId', verifyAdminToken, deleteReunion);
+
+// RBAC management
+router.get('/rbac/permissions', verifyAdminToken, getRolePermissions);
+router.put('/rbac/permissions', verifyAdminToken, updateRolePermission);
 
 export default router;

@@ -166,7 +166,7 @@ export default function Donations() {
    };
 
    const tabs = [
-      { id: 'all', label: 'All Donations' },
+      { id: 'all', label: 'All Contributions' },
       { id: 'succeeded', label: 'Successful' },
       { id: 'pending', label: 'Pending' },
       { id: 'failed', label: 'Failed' }
@@ -179,10 +179,10 @@ export default function Donations() {
             <div>
                <h1 className="text-3xl font-bold text-white flex items-center gap-2">
                   <Heart className="w-7 h-7 text-red-500" />
-                  Donations
+                  Contributions
                </h1>
                <p className="text-slate-400 mt-1">
-                  Manage and track alumni donations
+                  Manage and track alumni Contributions
                </p>
             </div>
             <Button
@@ -233,7 +233,7 @@ export default function Donations() {
                      <Heart className="w-6 h-6 text-purple-400" />
                   </div>
                   <div>
-                     <p className="text-sm text-slate-400">Total Donations</p>
+                     <p className="text-sm text-slate-400">Total Contributions</p>
                      <p className="text-2xl font-bold text-white">
                         {pagination.count || 0}
                      </p>
@@ -246,7 +246,7 @@ export default function Donations() {
                      <IndianRupee className="w-6 h-6 text-amber-400" />
                   </div>
                   <div>
-                     <p className="text-sm text-slate-400">Avg. Donation</p>
+                     <p className="text-sm text-slate-400">Avg. Contributions</p>
                      <p className="text-2xl font-bold text-white">
                         ₹{pagination.count ? Math.round(stats.totalAmount / pagination.count).toLocaleString() : 0}
                      </p>
@@ -258,7 +258,7 @@ export default function Donations() {
          {/* Purpose Breakdown */}
          {stats.byPurpose?.length > 0 && (
             <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
-               <h3 className="text-lg font-semibold text-white mb-4">Donations by Purpose</h3>
+               <h3 className="text-lg font-semibold text-white mb-4">Contributions by Purpose</h3>
                <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
                   {stats.byPurpose.map((item) => {
                      const Icon = getPurposeIcon(item._id);
@@ -269,7 +269,7 @@ export default function Donations() {
                            </div>
                            <p className="text-sm text-slate-400 capitalize mb-1">{item._id}</p>
                            <p className="font-bold text-white text-lg">₹{item.total.toLocaleString()}</p>
-                           <p className="text-xs text-slate-500">{item.count} donations</p>
+                           <p className="text-xs text-slate-500">{item.count} Contributions</p>
                         </div>
                      );
                   })}
@@ -306,7 +306,7 @@ export default function Donations() {
             ) : donations.length === 0 ? (
                <div className="text-center py-16">
                   <Heart className="w-12 h-12 mx-auto text-slate-600 mb-3" />
-                  <p className="text-slate-400">No donations found</p>
+                  <p className="text-slate-400">No Contributions found</p>
                </div>
             ) : (
                <div className="overflow-x-auto">
@@ -461,7 +461,7 @@ export default function Donations() {
                <DialogHeader>
                   <DialogTitle className="flex items-center gap-2 text-white">
                      <Heart className="w-5 h-5 text-red-500" />
-                     Donation Details
+                     Contributions Details
                   </DialogTitle>
                </DialogHeader>
                {selectedDonation && (

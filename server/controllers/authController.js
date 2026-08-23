@@ -1,5 +1,6 @@
 import passport from 'passport';
 import User from '../models/User.js';
+import RolePermission from '../models/RolePermission.js';
 import { deleteFromCloudinary } from '../config/cloudinary.js';
 
 // Email validation helper
@@ -290,6 +291,36 @@ export const getCurrentUser = (req, res) => {
       success: true,
       user: req.user
    });
+};
+
+// Get current user's module permissions based on their role
+export const getUserPermissions = async (req, res) => {
+   try {
+      const userRole = req.user.role;
+
+      // Admin gets all permissions
+      if (userRole === 'admin') {
+         const allModules = ['feed', 'reunion', 'gallery', 'contribution', 'internship'];
+         const permissions = {};
+         allModules.forEach(mod => { permissions[mod] = true; });
+         return res.json({ success: true, permissions });
+      }
+
+      const rolePermissions = await RolePermission.find({ role: userRole });
+
+      const permissions = {};
+      for (const perm of rolePermissions) {
+         permissions[perm.module] = perm.enabled;
+      }
+
+      res.json({ success: true, permissions });
+   } catch (error) {
+      console.error('Get User Permissions Error:', error);
+      res.status(500).json({
+         success: false,
+         message: 'Failed to fetch permissions'
+      });
+   }
 };
 
 // Update user profile

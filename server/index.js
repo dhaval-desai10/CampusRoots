@@ -26,6 +26,7 @@ import galleryRoutes from './routes/gallery.js';
 import feedbackRoutes from './routes/feedback.js';
 import donationRoutes from './routes/donation.js';
 import internshipRoutes from './routes/internship.js';
+import RolePermission from './models/RolePermission.js';
 
 // ES module dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -88,8 +89,14 @@ app.use(passport.session());
 // Serve static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Connect to MongoDB
-dbConnect();
+// Connect to MongoDB and seed RBAC defaults
+dbConnect().then(async () => {
+   try {
+      await RolePermission.seedDefaults();
+   } catch (err) {
+      console.error('❌ RBAC seed error:', err);
+   }
+});
 
 // Routes
 app.get('/', (req, res) => {

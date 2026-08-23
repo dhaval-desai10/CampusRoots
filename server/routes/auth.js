@@ -9,6 +9,7 @@ import {
    googleAuthCallback,
    googleAuthCallbackHandler,
    getCurrentUser,
+   getUserPermissions,
    updateProfile,
    logout
 } from '../controllers/authController.js';
@@ -30,6 +31,9 @@ router.get('/google/callback', googleAuthCallback, googleAuthCallbackHandler);
 
 // Get current user
 router.get('/me', isAuthenticated, getCurrentUser);
+
+// Get current user's module permissions
+router.get('/permissions', isAuthenticated, getUserPermissions);
 
 // Update user profile
 router.put('/profile', isAuthenticated, updateProfile);

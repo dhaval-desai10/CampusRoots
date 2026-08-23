@@ -11,6 +11,7 @@ import Gallery from '@/pages/Gallery';
 import Feedback from '@/pages/Feedback';
 import Donations from '@/pages/Donations';
 import Internships from '@/pages/Internships';
+import RBAC from '@/pages/RBAC';
 
 function App() {
    return (
@@ -94,6 +95,16 @@ function App() {
                      <PrivateRoute>
                         <Layout>
                            <Internships />
+                        </Layout>
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/rbac"
+                  element={
+                     <PrivateRoute>
+                        <Layout>
+                           <RBAC />
                         </Layout>
                      </PrivateRoute>
                   }

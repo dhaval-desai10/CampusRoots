@@ -1,5 +1,6 @@
 import express from 'express';
 import { isAuthenticated } from '../middleware/auth.js';
+import { requirePermission } from '../middleware/rbac.js';
 import {
    // Alumni functions
    createInternship,
@@ -27,6 +28,7 @@ const router = express.Router();
 
 // All routes are protected
 router.use(isAuthenticated);
+router.use(requirePermission('internship'));
 
 // ==================== Admin Routes (Specific paths first) ====================
 // Get all internships (admin view with additional data)

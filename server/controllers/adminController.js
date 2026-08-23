@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import Post from '../models/Post.js';
 import Reunion from '../models/Reunion.js';
+import RolePermission, { VALID_ROLES, VALID_MODULES } from '../models/RolePermission.js';
 import jwt from 'jsonwebtoken';
 
 // Fixed Admin Credentials (In production, use environment variables)
@@ -504,6 +505,98 @@ export const deleteReunion = async (req, res) => {
       res.status(500).json({
          success: false,
          message: 'Failed to delete reunion'
+      });
+   }
+};
+
+// ==================== RBAC Controller Functions ====================
+
+// Get all role permissions (optionally filter by role)
+export const getRolePermissions = async (req, res) => {
+   try {
+      const { role } = req.query;
+      const query = {};
+
+      if (role) {
+         if (!VALID_ROLES.includes(role)) {
+            return res.status(400).json({
+               success: false,
+               message: `Invalid role. Must be one of: ${VALID_ROLES.join(', ')}`
+            });
+         }
+         query.role = role;
+      }
+
+      const permissions = await RolePermission.find(query).sort({ role: 1, module: 1 });
+
+      // Group permissions by role for easier frontend consumption
+      const grouped = {};
+      for (const perm of permissions) {
+         if (!grouped[perm.role]) {
+            grouped[perm.role] = {};
+         }
+         grouped[perm.role][perm.module] = perm.enabled;
+      }
+
+      res.json({
+         success: true,
+         permissions,
+         grouped,
+         roles: VALID_ROLES,
+         modules: VALID_MODULES
+      });
+   } catch (error) {
+      console.error('Get Role Permissions Error:', error);
+      res.status(500).json({
+         success: false,
+         message: 'Failed to fetch role permissions'
+      });
+   }
+};
+
+// Update a specific role-module permission
+export const updateRolePermission = async (req, res) => {
+   try {
+      const { role, module, enabled } = req.body;
+
+      // Validate inputs
+      if (!role || !module || typeof enabled !== 'boolean') {
+         return res.status(400).json({
+            success: false,
+            message: 'role, module, and enabled (boolean) are required'
+         });
+      }
+
+      if (!VALID_ROLES.includes(role)) {
+         return res.status(400).json({
+            success: false,
+            message: `Invalid role. Must be one of: ${VALID_ROLES.join(', ')}`
+         });
+      }
+
+      if (!VALID_MODULES.includes(module)) {
+         return res.status(400).json({
+            success: false,
+            message: `Invalid module. Must be one of: ${VALID_MODULES.join(', ')}`
+         });
+      }
+
+      const permission = await RolePermission.findOneAndUpdate(
+         { role, module },
+         { enabled },
+         { new: true, upsert: true }
+      );
+
+      res.json({
+         success: true,
+         message: `Permission updated: ${role} → ${module} = ${enabled ? 'ON' : 'OFF'}`,
+         permission
+      });
+   } catch (error) {
+      console.error('Update Role Permission Error:', error);
+      res.status(500).json({
+         success: false,
+         message: 'Failed to update permission'
       });
    }
 };

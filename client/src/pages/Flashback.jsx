@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import {
@@ -19,33 +20,36 @@ import {
   Moon,
   ChevronLeft,
   ChevronRight,
+  Play,
+  Pause,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 
-// College memories data - these can be replaced with actual images
-const collegeMemories = [
-  
+const API_URL = "http://localhost:5000/api";
+
+// Fallback college memories data using exact gallery photos
+const defaultMemories = [
   {
-    id: 2,
-    image: ".././public/back3.jfif",
+    id: 1,
+    image: "/back3.jfif",
     title: "Graduation Day",
     description: "The culmination of years of hard work",
   },
   {
-    id: 4,
-    image: ".././public/back4.jfif",
+    id: 2,
+    image: "/back4.jfif",
     title: "Group Projects",
     description: "Friends who became family",
   },
   {
-    id: 5,
-    image: ".././public/back6.jfif",
+    id: 3,
+    image: "/back6.jfif",
     title: "Campus Events",
     description: "Memories that last forever",
   },
   {
-    id: 6,
-    image: ".././public/back7.jfif",
+    id: 4,
+    image: "/back7.jfif",
     title: "College Friends",
     description: "Bonds that never break",
   },
@@ -109,21 +113,74 @@ const Flashback = () => {
   const navigate = useNavigate();
   const [currentQuote, setCurrentQuote] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [memories, setMemories] = useState(defaultMemories);
 
   useEffect(() => {
+    fetchGalleries();
     const quoteInterval = setInterval(() => {
       setCurrentQuote((prev) => (prev + 1) % nostalgicQuotes.length);
     }, 5000);
     return () => clearInterval(quoteInterval);
   }, []);
 
+  const fetchGalleries = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/gallery`, {
+        withCredentials: true,
+      });
+      if (response.data && response.data.length > 0) {
+        const fetchedList = [];
+        response.data.forEach((gallery) => {
+          if (gallery.photos && gallery.photos.length > 0) {
+            gallery.photos.forEach((photo, idx) => {
+              fetchedList.push({
+                id: photo._id || `${gallery._id}-${idx}`,
+                image: photo.url || gallery.coverImage,
+                title: photo.caption || gallery.title || "",
+                description:
+                  photo.caption && gallery.description && photo.caption !== gallery.description
+                    ? gallery.description
+                    : photo.caption || gallery.description || "",
+              });
+            });
+          } else if (gallery.coverImage) {
+            fetchedList.push({
+              id: gallery._id,
+              image: gallery.coverImage,
+              title: gallery.title || "",
+              description: gallery.description || "",
+            });
+          }
+        });
+        if (fetchedList.length > 0) {
+          setMemories(fetchedList);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch gallery memories:", error);
+    }
+  };
+
+  // Continuous auto slide every 3.5 seconds
+  useEffect(() => {
+    if (memories.length <= 1) return;
+
+    const slideTimer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % memories.length);
+    }, 3500);
+
+    return () => clearInterval(slideTimer);
+  }, [memories.length]);
+
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % collegeMemories.length);
+    if (memories.length === 0) return;
+    setCurrentSlide((prev) => (prev + 1) % memories.length);
   };
 
   const prevSlide = () => {
+    if (memories.length === 0) return;
     setCurrentSlide(
-      (prev) => (prev - 1 + collegeMemories.length) % collegeMemories.length,
+      (prev) => (prev - 1 + memories.length) % memories.length,
     );
   };
 
@@ -210,63 +267,83 @@ const Flashback = () => {
 
           {/* Featured Slider */}
           <div className="relative mb-12">
-            <div className="relative overflow-hidden rounded-3xl aspect-[16/9] md:aspect-[21/9]">
+            <div className="relative overflow-hidden rounded-3xl aspect-[16/9] md:aspect-[21/9] shadow-2xl bg-gray-950 border border-white/10">
+              {/* Sliding Track */}
               <div
-                className="flex transition-transform duration-500 h-full"
+                className="flex h-full transition-transform duration-700 ease-in-out"
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
               >
-                {collegeMemories.map((memory) => (
+                {memories.map((memory, index) => (
                   <div
-                    key={memory.id}
+                    key={memory.id || index}
                     className="w-full h-full flex-shrink-0 relative"
                   >
                     <img
                       src={memory.image}
-                      alt={memory.title}
+                      alt={memory.title || "Campus Memory"}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
-                      <h3 className="text-2xl md:text-4xl font-bold text-white mb-2">
-                        {memory.title}
-                      </h3>
-                      <p className="text-white/80 text-lg">
-                        {memory.description}
-                      </p>
-                    </div>
+
+                    {/* Dark gradient for text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+                    {/* Clean caption block */}
+                    {(memory.title || memory.description) && (
+                      <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-white z-10">
+                        {memory.title && (
+                          <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-2 tracking-tight drop-shadow-md">
+                            {memory.title}
+                          </h3>
+                        )}
+                        {memory.description && (
+                          <p className="text-gray-200 text-sm sm:text-base md:text-lg max-w-2xl font-light leading-relaxed drop-shadow">
+                            {memory.description}
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
 
-              {/* Slider Controls */}
-              <button
-                onClick={prevSlide}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-all"
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </button>
-              <button
-                onClick={nextSlide}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-all"
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
+              {/* Prev / Next Controls */}
+              {memories.length > 1 && (
+                <>
+                  <button
+                    onClick={prevSlide}
+                    aria-label="Previous Slide"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-xl"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={nextSlide}
+                    aria-label="Next Slide"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-xl"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </>
+              )}
             </div>
 
-            {/* Slider Dots */}
-            <div className="flex justify-center gap-2 mt-6">
-              {collegeMemories.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    index === currentSlide
-                      ? "w-8 bg-[var(--primary-blue)] dark:bg-[var(--accent-orange)]"
-                      : "bg-[var(--border)] hover:bg-[var(--text-secondary)]"
-                  }`}
-                />
-              ))}
-            </div>
+            {/* Clean Pagination Dots */}
+            {memories.length > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-6">
+                {memories.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`h-2.5 rounded-full transition-all duration-300 ${
+                      index === currentSlide
+                        ? "w-8 bg-[var(--primary-blue)] dark:bg-[var(--accent-orange)]"
+                        : "w-2.5 bg-[var(--border)] hover:bg-gray-400"
+                    }`}
+                    title={`Slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>

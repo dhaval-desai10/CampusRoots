@@ -2,6 +2,7 @@ import express from 'express';
 import { uploadGalleryPhotos } from '../config/cloudinary.js';
 import { verifyAdminToken } from '../middleware/adminAuth.js';
 import { isAuthenticated } from '../middleware/auth.js';
+import { requirePermission } from '../middleware/rbac.js';
 import {
    getAllGalleries,
    getGalleryById,
@@ -16,8 +17,8 @@ import {
 const router = express.Router();
 
 // Public routes (for authenticated users - students, faculty, alumni)
-router.get('/', isAuthenticated, getAllGalleries);
-router.get('/:id', isAuthenticated, getGalleryById);
+router.get('/', isAuthenticated, requirePermission('gallery'), getAllGalleries);
+router.get('/:id', isAuthenticated, requirePermission('gallery'), getGalleryById);
 
 // Admin routes
 router.get('/admin/all', verifyAdminToken, adminGetAllGalleries);

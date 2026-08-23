@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { usePermissions } from "../context/PermissionContext";
 import { useTheme } from "../context/ThemeContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -35,6 +36,7 @@ const SOCKET_URL = "http://localhost:5000";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { hasPermission } = usePermissions();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -270,22 +272,23 @@ const Navbar = () => {
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
-  const navLinks = [
+  // Build nav links dynamically based on RBAC permissions
+  const allNavLinks = [
     { name: "Home", path: "/home", icon: Home },
-    { name: "Feed", path: "/feed", icon: Newspaper },
-    { name: "Reunions", path: "/reunions", icon: PartyPopper },
-    { name: "Gallery", path: "/gallery", icon: Images },
+    { name: "Feed", path: "/feed", icon: Newspaper, module: "feed" },
+    { name: "Reunions", path: "/reunions", icon: PartyPopper, module: "reunion" },
+    { name: "Gallery", path: "/gallery", icon: Images, module: "gallery" },
     { name: "Network", path: "/network", icon: Users },
-    // Feedback only visible to alumni
+    // Feedback only visible to alumni (not RBAC controlled)
     ...(user?.role === "alumni"
       ? [{ name: "Feedback", path: "/feedback", icon: MessageSquare }]
       : []),
-    // Donation only visible to alumni
+    // Contribution controlled by RBAC + alumni-only visibility preserved
     ...(user?.role === "alumni"
-      ? [{ name: "Donate", path: "/donation", icon: Heart }]
+      ? [{ name: "Contribute", path: "/donation", icon: Heart, module: "contribution" }]
       : []),
-    // Internships visible to students, alumni, and faculty
-    { name: "Internships", path: "/internships", icon: Briefcase },
+    // Internships controlled by RBAC
+    { name: "Internships", path: "/internships", icon: Briefcase, module: "internship" },
     {
       name: "Messages",
       path: "/chat",
@@ -293,6 +296,16 @@ const Navbar = () => {
       badge: unreadMessageCount,
     },
   ];
+
+  // Filter nav links based on RBAC permissions
+  const navLinks = allNavLinks.filter(link => {
+    // If link has a module property, check permission
+    if (link.module) {
+      return hasPermission(link.module);
+    }
+    // Links without a module property are always visible
+    return true;
+  });
 
   const isActivePath = (path) => location.pathname === path;
 
@@ -309,10 +322,12 @@ const Navbar = () => {
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => navigate("/flashback")}
           >
-            
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold text-[var(--text-primary)]">
-                Campus<span className="text-[var(--primary-blue)] dark:text-[var(--accent-orange)]">Roots</span>
+                Campus
+                <span className="text-[var(--primary-blue)] dark:text-[var(--accent-orange)]">
+                  Roots
+                </span>
               </h1>
               <p className="text-[10px] text-[var(--text-secondary)] -mt-0.5">
                 Alumni Network
@@ -354,14 +369,18 @@ const Navbar = () => {
                   onClick={() => setIsMoreDropdownOpen(!isMoreDropdownOpen)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
                               ${
-                                secondaryNavLinks.some((link) => isActivePath(link.path))
+                                secondaryNavLinks.some((link) =>
+                                  isActivePath(link.path),
+                                )
                                   ? "bg-[var(--primary-blue)]/10 dark:bg-[var(--accent-orange)]/10 text-[var(--primary-blue)] dark:text-[var(--accent-orange)]"
                                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background)]"
                               }
                            `}
                 >
                   More
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMoreDropdownOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-200 ${isMoreDropdownOpen ? "rotate-180" : ""}`}
+                  />
                   {/* Badge if any secondary link has unread */}
                   {secondaryNavLinks.some((link) => link.badge > 0) && (
                     <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />

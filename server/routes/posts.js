@@ -1,5 +1,6 @@
 import express from 'express';
 import { isAuthenticated } from '../middleware/auth.js';
+import { requirePermission } from '../middleware/rbac.js';
 import upload from '../config/cloudinary.js';
 import {
    createPost,
@@ -18,6 +19,7 @@ const router = express.Router();
 
 // All routes are protected
 router.use(isAuthenticated);
+router.use(requirePermission('feed'));
 
 // Post CRUD
 router.post('/', upload.array('media', 10), createPost);

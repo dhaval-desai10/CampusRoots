@@ -49,7 +49,7 @@ const DonationForm = ({ onSuccess }) => {
   const [customAmount, setCustomAmount] = useState("");
   const [purpose, setPurpose] = useState("general");
   const [message, setMessage] = useState("");
-  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [isAnonymous,] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -101,7 +101,7 @@ const DonationForm = ({ onSuccess }) => {
     if (!stripe || !elements) return;
 
     if (!selectedAmount || parseInt(selectedAmount) < 100) {
-      setError("Minimum donation amount is ₹100");
+      setError("Minimum Contributions amount is ₹100");
       return;
     }
 
@@ -292,7 +292,7 @@ const DonationForm = ({ onSuccess }) => {
         ) : (
           <>
             <Heart className="w-6 h-6" />
-            Donate{" "}
+            Contribute{" "}
             {selectedAmount
               ? `₹${parseInt(selectedAmount).toLocaleString()}`
               : "Now"}
@@ -341,7 +341,7 @@ const Donation = () => {
       setMyDonations(myRes.data);
       setPublicDonors(publicRes.data);
     } catch (err) {
-      console.error("Error fetching donation data:", err);
+      console.error("Error fetching Contributions data:", err);
     } finally {
       setLoading(false);
     }
@@ -364,8 +364,8 @@ const Donation = () => {
   if (user?.role !== "alumni") return null;
 
   const tabs = [
-    { id: "donate", label: "Make a Donation", icon: Heart },
-    { id: "donors", label: "Top Donors", icon: Crown },
+    { id: "donate", label: "Make a Contributions", icon: Heart },
+    { id: "donors", label: "Top Contributions", icon: Crown },
     { id: "history", label: "My History", icon: History },
   ];
 
@@ -441,7 +441,7 @@ const Donation = () => {
                 {publicDonors.stats?.uniqueDonors || 0}
               </p>
               <p className="text-sm text-[var(--text-secondary)]">
-                Generous Donors
+                Generous Contributions
               </p>
             </div>
             <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-2xl p-5 hover:shadow-xl transition-all duration-300 group">
@@ -452,7 +452,7 @@ const Donation = () => {
                 {publicDonors.stats?.donationCount || 0}
               </p>
               <p className="text-sm text-[var(--text-secondary)]">
-                Total Donations
+                Total Contributions
               </p>
             </div>
             <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-2xl p-5 hover:shadow-xl transition-all duration-300 group">
@@ -498,7 +498,7 @@ const Donation = () => {
                       Thank You! 🎉
                     </h2>
                     <p className="text-lg text-[var(--text-secondary)] mb-8">
-                      Your donation of{" "}
+                      Your Contributions of{" "}
                       <span className="font-bold text-blue-500">
                         ₹{successAmount.toLocaleString()}
                       </span>{" "}
@@ -515,7 +515,7 @@ const Donation = () => {
                         onClick={() => setActiveTab("history")}
                         className="px-8 py-3 rounded-xl border-2 border-[var(--border)] text-[var(--text-primary)] font-semibold hover:bg-[var(--background)] transition-colors"
                       >
-                        View My Donations
+                        View My Contributions
                       </button>
                     </div>
                   </div>
@@ -636,13 +636,13 @@ const Donation = () => {
                       <History className="w-10 h-10 text-[var(--text-secondary)]" />
                     </div>
                     <p className="text-[var(--text-secondary)] text-lg mb-4">
-                      You haven't made any donations yet
+                      You haven't made any Contributions yet
                     </p>
                     <button
                       onClick={() => setActiveTab("donate")}
                       className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold"
                     >
-                      Make Your First Donation
+                      Make Your First Contributions
                     </button>
                   </div>
                 ) : (
