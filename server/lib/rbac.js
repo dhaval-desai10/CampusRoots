@@ -2,14 +2,24 @@
 // Backend RBAC (Role-Based Access Control) Constants
 // ============================================
 
-/**
- * User Roles in CampusRoots Platform
- */
-export const ROLES = {
-  STUDENT: 'student',
-  ALUMNI: 'alumni',
-  FACULTY: 'faculty',
-  ADMIN: 'admin'
+import {
+  ROLES,
+  MODULES,
+  ASSIGNABLE_ROLES,
+  ALL_ROLES,
+  ALL_MODULES,
+  MODULE_LABELS,
+  DEFAULT_ROLE_PERMISSIONS
+} from '../constants/rbac.js';
+
+export {
+  ROLES,
+  MODULES,
+  ASSIGNABLE_ROLES,
+  ALL_ROLES,
+  ALL_MODULES,
+  MODULE_LABELS,
+  DEFAULT_ROLE_PERMISSIONS
 };
 
 /**

@@ -2,6 +2,7 @@ import passport from 'passport';
 import User from '../models/User.js';
 import RolePermission from '../models/RolePermission.js';
 import { deleteFromCloudinary } from '../config/cloudinary.js';
+import { ROLES, ALL_MODULES } from '../constants/rbac.js';
 
 // Email validation helper
 const isValidCharusatEmail = (email) => {
@@ -53,7 +54,7 @@ export const getRoleFromEmail = (email) => {
    
    // Faculty: @charusat.ac.in
    if (lowerEmail.endsWith('@charusat.ac.in')) {
-      return 'faculty';
+      return ROLES.FACULTY;
    }
    
    // Student/Alumni: @charusat.edu.in
@@ -78,15 +79,15 @@ export const getRoleFromEmail = (email) => {
       }
       // Fallback for other formats
       else {
-         return 'alumni'; // Default to alumni if format is unrecognized
+         return ROLES.ALUMNI; // Default to alumni if format is unrecognized
       }
       
       // If years < 4, student; otherwise alumni
-      return yearsDiff < 4 ? 'student' : 'alumni';
+      return yearsDiff < 4 ? ROLES.STUDENT : ROLES.ALUMNI;
    }
    
    // Default fallback
-   return 'alumni';
+   return ROLES.ALUMNI;
 };
 
 // Register with email/password
@@ -299,10 +300,9 @@ export const getUserPermissions = async (req, res) => {
       const userRole = req.user.role;
 
       // Admin gets all permissions
-      if (userRole === 'admin') {
-         const allModules = ['feed', 'reunion', 'gallery', 'contribution', 'internship'];
+      if (userRole === ROLES.ADMIN) {
          const permissions = {};
-         allModules.forEach(mod => { permissions[mod] = true; });
+         ALL_MODULES.forEach(mod => { permissions[mod] = true; });
          return res.json({ success: true, permissions });
       }
 

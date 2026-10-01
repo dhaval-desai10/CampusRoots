@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Shield, Users, GraduationCap, Briefcase, Save, Loader2, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import api from '@/lib/api';
+import { MODULE_LABELS } from '../constants/rbac.js';
 
 const ROLE_CONFIG = {
    student: {
@@ -25,14 +26,6 @@ const ROLE_CONFIG = {
       color: 'from-blue-500 to-indigo-600',
       badgeClass: 'bg-blue-500/20 text-blue-400 border-blue-500/30'
    }
-};
-
-const MODULE_LABELS = {
-   feed: 'Feed',
-   reunion: 'Reunion',
-   gallery: 'Gallery',
-   contribution: 'Contribution / Donation',
-   internship: 'Internship'
 };
 
 export default function RBAC() {

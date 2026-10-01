@@ -1,6 +1,7 @@
 import express from 'express';
 import { isAuthenticated } from '../middleware/auth.js';
 import { requirePermission } from '../middleware/rbac.js';
+import { MODULES } from '../constants/rbac.js';
 import upload from '../config/cloudinary.js';
 import {
    createReunion,
@@ -17,7 +18,7 @@ const router = express.Router();
 
 // All routes require authentication
 router.use(isAuthenticated);
-router.use(requirePermission('reunion'));
+router.use(requirePermission(MODULES.REUNION));
 
 // Get available batches for faculty to target
 router.get('/batches', getAvailableBatches);

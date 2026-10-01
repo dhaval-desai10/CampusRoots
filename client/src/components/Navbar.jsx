@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { usePermissions } from "../context/PermissionContext";
 import { useTheme } from "../context/ThemeContext";
+import { ROLES, MODULES } from "../constants/rbac.js";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import io from "socket.io-client";
@@ -275,20 +276,20 @@ const Navbar = () => {
   // Build nav links dynamically based on RBAC permissions
   const allNavLinks = [
     { name: "Home", path: "/home", icon: Home },
-    { name: "Feed", path: "/feed", icon: Newspaper, module: "feed" },
-    { name: "Reunions", path: "/reunions", icon: PartyPopper, module: "reunion" },
-    { name: "Gallery", path: "/gallery", icon: Images, module: "gallery" },
+    { name: "Feed", path: "/feed", icon: Newspaper, module: MODULES.FEED },
+    { name: "Reunions", path: "/reunions", icon: PartyPopper, module: MODULES.REUNION },
+    { name: "Gallery", path: "/gallery", icon: Images, module: MODULES.GALLERY },
     { name: "Network", path: "/network", icon: Users },
     // Feedback only visible to alumni (not RBAC controlled)
-    ...(user?.role === "alumni"
+    ...(user?.role === ROLES.ALUMNI
       ? [{ name: "Feedback", path: "/feedback", icon: MessageSquare }]
       : []),
     // Contribution controlled by RBAC + alumni-only visibility preserved
-    ...(user?.role === "alumni"
-      ? [{ name: "Contribute", path: "/donation", icon: Heart, module: "contribution" }]
+    ...(user?.role === ROLES.ALUMNI
+      ? [{ name: "Contribute", path: "/donation", icon: Heart, module: MODULES.CONTRIBUTION }]
       : []),
     // Internships controlled by RBAC
-    { name: "Internships", path: "/internships", icon: Briefcase, module: "internship" },
+    { name: "Internships", path: "/internships", icon: Briefcase, module: MODULES.INTERNSHIP },
     {
       name: "Messages",
       path: "/chat",

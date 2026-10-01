@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { ALL_ROLES, ROLES } from '../constants/rbac.js';
 
 const userSchema = new mongoose.Schema({
    googleId: {
@@ -45,8 +46,8 @@ const userSchema = new mongoose.Schema({
    // Role Management
    role: {
       type: String,
-      enum: ['student', 'alumni', 'faculty', 'admin'],
-      default: 'alumni'
+      enum: ALL_ROLES,
+      default: ROLES.ALUMNI
    },
    // Privacy Settings
    privacy: {

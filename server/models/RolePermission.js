@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
+import { ASSIGNABLE_ROLES, ALL_MODULES } from '../constants/rbac.js';
 
-const VALID_ROLES = ['student', 'faculty', 'alumni'];
-const VALID_MODULES = ['feed', 'reunion', 'gallery', 'contribution', 'internship'];
+const VALID_ROLES = ASSIGNABLE_ROLES;
+const VALID_MODULES = ALL_MODULES;
 
 const rolePermissionSchema = new mongoose.Schema({
    role: {
@@ -14,7 +15,7 @@ const rolePermissionSchema = new mongoose.Schema({
       required: true,
       enum: VALID_MODULES
    },
-   enabled: {
+   enabled: {   
       type: Boolean,
       default: true
    }

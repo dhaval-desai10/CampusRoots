@@ -1,4 +1,5 @@
 import RolePermission from '../models/RolePermission.js';
+import { ROLES } from '../constants/rbac.js';
 
 /**
  * Middleware factory that checks if the authenticated user's role
@@ -23,7 +24,7 @@ export const requirePermission = (moduleName) => {
          const userRole = req.user.role;
 
          // Admin bypasses RBAC
-         if (userRole === 'admin') {
+         if (userRole === ROLES.ADMIN) {
             return next();
          }
 

@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { PermissionProvider } from './context/PermissionContext';
 import PrivateRoute from './components/PrivateRoute';
 import PermissionRoute from './components/PermissionRoute';
+import { MODULES } from './constants/rbac.js';
 import Login from './pages/Login';
 import CompleteProfile from './pages/CompleteProfile';
 import Flashback from './pages/Flashback';
@@ -71,7 +72,7 @@ function App() {
                 path="/feed"
                 element={
                   <PrivateRoute>
-                    <PermissionRoute module="feed">
+                    <PermissionRoute module={MODULES.FEED}>
                       <Feed />
                     </PermissionRoute>
                   </PrivateRoute>
@@ -89,7 +90,7 @@ function App() {
                 path="/reunions"
                 element={
                   <PrivateRoute>
-                    <PermissionRoute module="reunion">
+                    <PermissionRoute module={MODULES.REUNION}>
                       <Reunions />
                     </PermissionRoute>
                   </PrivateRoute>
@@ -99,7 +100,7 @@ function App() {
                 path="/gallery"
                 element={
                   <PrivateRoute>
-                    <PermissionRoute module="gallery">
+                    <PermissionRoute module={MODULES.GALLERY}>
                       <Gallery />
                     </PermissionRoute>
                   </PrivateRoute>
@@ -117,7 +118,7 @@ function App() {
                 path="/donation"
                 element={
                   <PrivateRoute>
-                    <PermissionRoute module="contribution">
+                    <PermissionRoute module={MODULES.CONTRIBUTION}>
                       <Donation />
                     </PermissionRoute>
                   </PrivateRoute>
@@ -127,7 +128,7 @@ function App() {
                 path="/internships"
                 element={
                   <PrivateRoute>
-                    <PermissionRoute module="internship">
+                    <PermissionRoute module={MODULES.INTERNSHIP}>
                       <Internships />
                     </PermissionRoute>
                   </PrivateRoute>

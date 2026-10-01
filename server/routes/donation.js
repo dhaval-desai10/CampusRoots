@@ -2,6 +2,7 @@ import express from 'express';
 import { isAuthenticated } from '../middleware/auth.js';
 import { requirePermission } from '../middleware/rbac.js';
 import { verifyAdminToken } from '../middleware/adminAuth.js';
+import { MODULES } from '../constants/rbac.js';
 import {
    createPaymentIntent,
    confirmDonation,
@@ -20,13 +21,13 @@ const router = express.Router();
 // ============ USER ROUTES (Alumni only) ============
 
 // Create payment intent for donation
-router.post('/create-payment-intent', isAuthenticated, requirePermission('contribution'), createPaymentIntent);
+router.post('/create-payment-intent', isAuthenticated, requirePermission(MODULES.CONTRIBUTION), createPaymentIntent);
 
 // Confirm donation after payment
-router.post('/confirm', isAuthenticated, requirePermission('contribution'), confirmDonation);
+router.post('/confirm', isAuthenticated, requirePermission(MODULES.CONTRIBUTION), confirmDonation);
 
 // Get user's donation history
-router.get('/my-donations', isAuthenticated, requirePermission('contribution'), getMyDonations);
+router.get('/my-donations', isAuthenticated, requirePermission(MODULES.CONTRIBUTION), getMyDonations);
 
 // Get public donor list
 router.get('/public-donors', getPublicDonors);

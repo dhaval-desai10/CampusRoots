@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import Post from '../models/Post.js';
 import Reunion from '../models/Reunion.js';
 import RolePermission, { VALID_ROLES, VALID_MODULES } from '../models/RolePermission.js';
+import { ROLES, ALL_ROLES } from '../constants/rbac.js';
 import jwt from 'jsonwebtoken';
 
 // Fixed Admin Credentials (In production, use environment variables)
@@ -231,10 +232,10 @@ export const updateUserRole = async (req, res) => {
       const { userId } = req.params;
       const { role } = req.body;
 
-      if (!['student', 'alumni', 'faculty', 'admin'].includes(role)) {
+      if (!ALL_ROLES.includes(role)) {
          return res.status(400).json({
             success: false,
-            message: 'Invalid role'
+            message: `Invalid role. Must be one of: ${ALL_ROLES.join(', ')}`
          });
       }
 
